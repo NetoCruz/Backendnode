@@ -15,13 +15,48 @@ function addMessage(message){
     myMessage.save()
 }
 
-async function getMessages(){
+async function getMessages(filterUser){
     //return list
-    const messages = await Model.find()
-    return messages
+    return new Promise((resolve,reject)=>{
+      let filter ={}
+    if(filterUser !== null){
+      filter={user:filterUser}
+    }
+     Model.find(filter)
+     .populate('user')
+     .exec((error,populated)=>{
+       if (error){
+         reject(error)
+         return false
+       }
+
+       resolve(populated)
+     })
+     
+    
+    })
+    
 }
+
+function removeMessage(id){
+  return Model.deleteOne({
+    _id: id 
+  })
+}
+
+async function updateText(id,message){
+    const foundMessage = await Model.findOne({
+        _id:id
+    })
+    foundMessage.message = message
+    const newMessage = await foundMessage.save()
+    return newMessage
+}
+
 
 module.exports= {
     add: addMessage,
     list:getMessages,
+    updateText:updateText,
+    remove:removeMessage
 }
