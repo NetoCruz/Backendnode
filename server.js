@@ -1,14 +1,17 @@
 const express = require('express')
-const bodyParser = require('body-parser')
+var app = express()
 
+const server = require('http').Server(app)
+const bodyParser = require('body-parser')
+const socket = require('./socket')
 //const router = require('./components/message/network')
 const router = require('./network/routes')
 
 
-var app = express()
+
 app.use(bodyParser.json())
 //app.use(router)
-
+socket.connect(server)
 router(app)
 
 
@@ -20,5 +23,6 @@ router(app)
 
 app.use('/app',express.static('public'))
 
-app.listen(3000)
-console.log('La app está escuchando en http://localhost:3000')
+server.listen(3000, ()=>{
+   console.log('La app está escuchando en http://localhost:3000') 
+})
